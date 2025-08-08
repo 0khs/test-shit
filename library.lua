@@ -279,8 +279,6 @@ function UILibrary:CreateWindow(title, iconId)
     return Window
 end
 
-return UILibrary
-
 
 -- Enhanced Icon System
 local IconManager = {}
