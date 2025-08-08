@@ -1,12 +1,8 @@
--- UI Library by 0khs
--- Modern Roblox GUI Library with Icon Support and Settings
-
 local UILibrary = {}
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Library Configuration
 local Config = {
     Font = Enum.Font.GothamBold,
     MainColor = Color3.fromRGB(25, 25, 35),
@@ -19,7 +15,6 @@ local Config = {
     ErrorColor = Color3.fromRGB(255, 0, 0)
 }
 
--- Utility Functions
 local function CreateTween(object, properties, duration, easingStyle, easingDirection)
     duration = duration or 0.3
     easingStyle = easingStyle or Enum.EasingStyle.Quad
@@ -45,19 +40,16 @@ local function CreateStroke(parent, thickness, color)
     return stroke
 end
 
--- Main Library Functions
 function UILibrary:CreateWindow(title, iconId)
     local Window = {}
     Window.Pages = {}
     Window.CurrentPage = nil
     
-    -- Create ScreenGui
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "UILibrary"
     ScreenGui.ResetOnSpawn = false
-    ScreenGui.Parent = game.CoreGui
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     
-    -- Main Frame
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Size = UDim2.new(0, 600, 0, 400)
@@ -68,7 +60,6 @@ function UILibrary:CreateWindow(title, iconId)
     CreateCorner(MainFrame, 12)
     CreateStroke(MainFrame, 2, Config.BorderColor)
     
-    -- Icon Holder at Top
     local IconHolder = Instance.new("Frame")
     IconHolder.Name = "IconHolder"
     IconHolder.Size = UDim2.new(1, 0, 0, 50)
@@ -78,17 +69,15 @@ function UILibrary:CreateWindow(title, iconId)
     IconHolder.Parent = MainFrame
     CreateCorner(IconHolder, 12)
     
-    -- Main Icon
     local MainIcon = Instance.new("ImageLabel")
     MainIcon.Name = "MainIcon"
     MainIcon.Size = UDim2.new(0, 32, 0, 32)
     MainIcon.Position = UDim2.new(0, 10, 0.5, -16)
     MainIcon.BackgroundTransparency = 1
-    MainIcon.Image = iconId or "rbxassetid://0"
+    MainIcon.Image = iconId or ""
     MainIcon.ImageColor3 = Config.AccentColor
     MainIcon.Parent = IconHolder
     
-    -- Title Label
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Name = "TitleLabel"
     TitleLabel.Size = UDim2.new(1, -60, 1, 0)
@@ -101,7 +90,6 @@ function UILibrary:CreateWindow(title, iconId)
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
     TitleLabel.Parent = IconHolder
     
-    -- Navigation Frame
     local NavigationFrame = Instance.new("Frame")
     NavigationFrame.Name = "NavigationFrame"
     NavigationFrame.Size = UDim2.new(0, 150, 1, -60)
@@ -111,7 +99,6 @@ function UILibrary:CreateWindow(title, iconId)
     NavigationFrame.Parent = MainFrame
     CreateCorner(NavigationFrame, 8)
     
-    -- Navigation List
     local NavigationList = Instance.new("UIListLayout")
     NavigationList.SortOrder = Enum.SortOrder.LayoutOrder
     NavigationList.Padding = UDim.new(0, 5)
@@ -124,7 +111,6 @@ function UILibrary:CreateWindow(title, iconId)
     NavigationPadding.PaddingRight = UDim.new(0, 10)
     NavigationPadding.Parent = NavigationFrame
     
-    -- Content Frame
     local ContentFrame = Instance.new("Frame")
     ContentFrame.Name = "ContentFrame"
     ContentFrame.Size = UDim2.new(1, -180, 1, -60)
@@ -134,7 +120,6 @@ function UILibrary:CreateWindow(title, iconId)
     ContentFrame.Parent = MainFrame
     CreateCorner(ContentFrame, 8)
     
-    -- Make window draggable
     local dragging = false
     local dragStart = nil
     local startPos = nil
@@ -160,12 +145,10 @@ function UILibrary:CreateWindow(title, iconId)
         end
     end)
     
-    -- Window Functions
     function Window:CreatePage(name, iconId)
         local Page = {}
         Page.Elements = {}
         
-        -- Page Button
         local PageButton = Instance.new("TextButton")
         PageButton.Name = name
         PageButton.Size = UDim2.new(1, 0, 0, 35)
@@ -175,17 +158,15 @@ function UILibrary:CreateWindow(title, iconId)
         PageButton.Parent = NavigationFrame
         CreateCorner(PageButton, 6)
         
-        -- Page Icon
         local PageIcon = Instance.new("ImageLabel")
         PageIcon.Name = "PageIcon"
         PageIcon.Size = UDim2.new(0, 20, 0, 20)
         PageIcon.Position = UDim2.new(0, 8, 0.5, -10)
         PageIcon.BackgroundTransparency = 1
-        PageIcon.Image = iconId or "rbxassetid://0"
+        PageIcon.Image = iconId or ""
         PageIcon.ImageColor3 = Config.TextColor
         PageIcon.Parent = PageButton
         
-        -- Page Label
         local PageLabel = Instance.new("TextLabel")
         PageLabel.Name = "PageLabel"
         PageLabel.Size = UDim2.new(1, -35, 1, 0)
@@ -198,7 +179,6 @@ function UILibrary:CreateWindow(title, iconId)
         PageLabel.TextXAlignment = Enum.TextXAlignment.Left
         PageLabel.Parent = PageButton
         
-        -- Page Content
         local PageContent = Instance.new("ScrollingFrame")
         PageContent.Name = name .. "Content"
         PageContent.Size = UDim2.new(1, 0, 1, 0)
@@ -211,7 +191,6 @@ function UILibrary:CreateWindow(title, iconId)
         PageContent.Visible = false
         PageContent.Parent = ContentFrame
         
-        -- Page Content Layout
         local ContentList = Instance.new("UIListLayout")
         ContentList.SortOrder = Enum.SortOrder.LayoutOrder
         ContentList.Padding = UDim.new(0, 10)
@@ -224,17 +203,14 @@ function UILibrary:CreateWindow(title, iconId)
         ContentPadding.PaddingRight = UDim.new(0, 15)
         ContentPadding.Parent = PageContent
         
-        -- Update canvas size when content changes
         ContentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             PageContent.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 30)
         end)
         
-        -- Page button functionality
         PageButton.MouseButton1Click:Connect(function()
             Window:SelectPage(name)
         end)
         
-        -- Hover effects
         PageButton.MouseEnter:Connect(function()
             if Window.CurrentPage ~= name then
                 CreateTween(PageButton, {BackgroundColor3 = Config.BorderColor}, 0.2):Play()
@@ -253,7 +229,6 @@ function UILibrary:CreateWindow(title, iconId)
             Page = Page
         }
         
-        -- Select first page by default
         if not Window.CurrentPage then
             Window:SelectPage(name)
         end
@@ -263,13 +238,11 @@ function UILibrary:CreateWindow(title, iconId)
     
     function Window:SelectPage(name)
         if Window.Pages[name] then
-            -- Hide current page
             if Window.CurrentPage and Window.Pages[Window.CurrentPage] then
                 Window.Pages[Window.CurrentPage].Content.Visible = false
                 CreateTween(Window.Pages[Window.CurrentPage].Button, {BackgroundColor3 = Config.MainColor}, 0.2):Play()
             end
             
-            -- Show new page
             Window.CurrentPage = name
             Window.Pages[name].Content.Visible = true
             CreateTween(Window.Pages[name].Button, {BackgroundColor3 = Config.AccentColor}, 0.2):Play()
@@ -279,32 +252,6 @@ function UILibrary:CreateWindow(title, iconId)
     return Window
 end
 
-
--- Enhanced Icon System
-local IconManager = {}
-IconManager.LoadedIcons = {}
-
-function IconManager:LoadIcon(iconId, callback)
-    if self.LoadedIcons[iconId] then
-        if callback then callback(true) end
-        return true
-    end
-    
-    -- Simulate icon loading
-    spawn(function()
-        wait(0.1) -- Simulate loading time
-        self.LoadedIcons[iconId] = true
-        if callback then callback(true) end
-    end)
-    
-    return false
-end
-
-function IconManager:GetIcon(iconId)
-    return iconId or "rbxassetid://0"
-end
-
--- UI Elements for Pages
 function UILibrary:CreateButton(parent, text, callback)
     local Button = Instance.new("TextButton")
     Button.Name = "Button"
@@ -318,7 +265,6 @@ function UILibrary:CreateButton(parent, text, callback)
     Button.Parent = parent
     CreateCorner(Button, 6)
     
-    -- Button animations
     Button.MouseEnter:Connect(function()
         CreateTween(Button, {BackgroundColor3 = Color3.fromRGB(120, 120, 255)}, 0.2):Play()
     end)
@@ -378,7 +324,7 @@ function UILibrary:CreateToggle(parent, text, default, callback)
     ToggleIndicator.Parent = ToggleButton
     CreateCorner(ToggleIndicator, 8)
     
-    local toggled = default
+    local toggled = default or false
     
     ToggleButton.MouseButton1Click:Connect(function()
         toggled = not toggled
@@ -466,7 +412,7 @@ function UILibrary:CreateSlider(parent, text, min, max, default, callback)
             local relativePos = math.clamp((mouse.X - trackPos) / trackSize, 0, 1)
             
             value = min + (max - min) * relativePos
-            value = math.floor(value * 100) / 100 -- Round to 2 decimal places
+            value = math.floor(value * 100) / 100
             
             SliderLabel.Text = text .. ": " .. value
             SliderFill.Size = UDim2.new(relativePos, 0, 1, 0)
@@ -527,14 +473,14 @@ function UILibrary:CreateDropdown(parent, text, options, default, callback)
     ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     ListLayout.Parent = DropdownList
     
-    local selectedValue = default or options[1]
+    local selectedValue = default or options[1] or ""
     local isOpen = false
     
     for i, option in ipairs(options) do
         local OptionButton = Instance.new("TextButton")
         OptionButton.Name = "Option" .. i
         OptionButton.Size = UDim2.new(1, 0, 0, 30)
-        OptionButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0, 0)
+        OptionButton.BackgroundTransparency = 1
         OptionButton.BorderSizePixel = 0
         OptionButton.Text = option
         OptionButton.TextColor3 = Config.TextColor
@@ -547,7 +493,7 @@ function UILibrary:CreateDropdown(parent, text, options, default, callback)
         end)
         
         OptionButton.MouseLeave:Connect(function()
-            CreateTween(OptionButton, {BackgroundColor3 = Color3.fromRGB(0, 0, 0, 0)}, 0.2):Play()
+            CreateTween(OptionButton, {BackgroundTransparency = 1}, 0.2):Play()
         end)
         
         OptionButton.MouseButton1Click:Connect(function()
@@ -569,35 +515,8 @@ function UILibrary:CreateDropdown(parent, text, options, default, callback)
     return DropdownFrame, function() return selectedValue end
 end
 
-
--- Settings System
 local SettingsManager = {}
 SettingsManager.Settings = {}
-SettingsManager.FileName = "UILibrary_Settings.json"
-
-function SettingsManager:LoadSettings()
-    if readfile and isfile and isfile(self.FileName) then
-        local success, data = pcall(function()
-            return game:GetService("HttpService"):JSONDecode(readfile(self.FileName))
-        end)
-        if success and data then
-            self.Settings = data
-            return true
-        end
-    end
-    return false
-end
-
-function SettingsManager:SaveSettings()
-    if writefile then
-        local success = pcall(function()
-            local jsonData = game:GetService("HttpService"):JSONEncode(self.Settings)
-            writefile(self.FileName, jsonData)
-        end)
-        return success
-    end
-    return false
-end
 
 function SettingsManager:GetSetting(key, default)
     return self.Settings[key] or default
@@ -605,17 +524,11 @@ end
 
 function SettingsManager:SetSetting(key, value)
     self.Settings[key] = value
-    self:SaveSettings()
 end
 
--- Initialize settings
-SettingsManager:LoadSettings()
-
--- Settings Page Creator
 function UILibrary:CreateSettingsPage(window)
     local SettingsPage = window:CreatePage("SETTINGS", "rbxassetid://7733779610")
     
-    -- Settings Title
     local SettingsTitle = Instance.new("TextLabel")
     SettingsTitle.Name = "SettingsTitle"
     SettingsTitle.Size = UDim2.new(1, 0, 0, 40)
@@ -627,7 +540,6 @@ function UILibrary:CreateSettingsPage(window)
     SettingsTitle.TextXAlignment = Enum.TextXAlignment.Center
     SettingsTitle.Parent = window.Pages["SETTINGS"].Content
     
-    -- Theme Grid Container
     local ThemeGrid = Instance.new("Frame")
     ThemeGrid.Name = "ThemeGrid"
     ThemeGrid.Size = UDim2.new(1, 0, 0, 300)
@@ -640,7 +552,6 @@ function UILibrary:CreateSettingsPage(window)
     GridLayout.SortOrder = Enum.SortOrder.LayoutOrder
     GridLayout.Parent = ThemeGrid
     
-    -- Theme Options (recreating the grid from the original image)
     local themes = {
         {name = "Dark Red", main = Color3.fromRGB(40, 20, 20), accent = Color3.fromRGB(200, 100, 100)},
         {name = "Dark Purple", main = Color3.fromRGB(30, 20, 40), accent = Color3.fromRGB(150, 100, 200)},
@@ -664,7 +575,6 @@ function UILibrary:CreateSettingsPage(window)
         CreateCorner(ThemeButton, 8)
         CreateStroke(ThemeButton, 2, theme.accent)
         
-        -- Theme preview lines (like in original)
         for j = 1, 3 do
             local PreviewLine = Instance.new("Frame")
             PreviewLine.Name = "PreviewLine" .. j
@@ -676,7 +586,6 @@ function UILibrary:CreateSettingsPage(window)
             CreateCorner(PreviewLine, 1)
         end
         
-        -- Theme selection
         ThemeButton.MouseButton1Click:Connect(function()
             Config.MainColor = theme.main
             Config.AccentColor = theme.accent
@@ -686,20 +595,13 @@ function UILibrary:CreateSettingsPage(window)
                 math.min(255, theme.main.B * 255 + 10)
             )
             
-            -- Save theme setting
             SettingsManager:SetSetting("selectedTheme", i)
-            SettingsManager:SetSetting("mainColor", {theme.main.R, theme.main.G, theme.main.B})
-            SettingsManager:SetSetting("accentColor", {theme.accent.R, theme.accent.G, theme.accent.B})
             
-            -- Visual feedback
             CreateTween(ThemeButton, {Size = UDim2.new(0, 115, 0, 85)}, 0.1):Play()
             wait(0.1)
             CreateTween(ThemeButton, {Size = UDim2.new(0, 120, 0, 90)}, 0.1):Play()
-            
-            print("Theme changed to: " .. theme.name)
         end)
         
-        -- Hover effects
         ThemeButton.MouseEnter:Connect(function()
             CreateTween(ThemeButton, {Size = UDim2.new(0, 125, 0, 95)}, 0.2):Play()
         end)
